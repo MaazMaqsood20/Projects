@@ -1,1 +1,123 @@
+"""
+
+DOWNLOAD THE 'USD_PKR_Exchange_Rates.csv' file and perform linear regression analysis using scipy and sklearn packages to predict
+future exchange rate.
+
+"""
+
+## PERFORMING LINEAR REGRESSION USING SCIPY
+
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+
+
+df=pd.read_csv('USD_PKR_Exchange_Rates.csv')
+# print(df)
+
+date_range= [x for x in range(635)]
+# print(date_range)
+
+df['Date_New']= date_range
+# print(df)
+
+X = df['Date_New']
+y = df['Price']
+
+# slope, intercept, r, p, se=stats.linregress(x,y)
+slope, intercept, r, p, se = stats.linregress( X , y)
+
+# print(slope)
+# print(intercept)
+# print(r) #r is correlation
+# print(p) #p is probability
+# print(se) #se is standard error
+
+# #y=mx+c or  y=ax +b  equation explained --> y= df['fx'] = (m or a is slope)*(x is X) + (c or b is y-intercept)
+df['fx'] = (slope * X + intercept)
+# print(df)
+
+# Find and store error in dataframe #variance
+df['Error'] = df['fx'] - df['Price']
+# print(df)
+# print(df.loc(df['Date_New'] == 650))
+
+df.plot.scatter(x= 'Date_New', y='Price')
+plt.plot(df['Date_New'], df['fx'], color= 'red')
+plt.xlabel('Date')
+plt.ylabel('USD-PKR Exchange Rate')
+plt.title('Linear Regression Model for Predicting USD-PKR Exchange Rate', fontweight='bold')
+plt.show()
+
+def f(x):
+    return slope*x + intercept
+
+statement=float(input('Enter the Date as a numeric value: '))
+prediction= f(statement)
+exchange_rate_pred = round(prediction,2)
+
+print('The predicted USD-PKR exchange rate will be: ', 'Rs.',exchange_rate_pred)
+
+#________________________________________________________________________________________________________#
+
+## PERFORMING LINEAR REGRESSION USING SKLEARN
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split   #splits the data into train and test.
+from sklearn.metrics import mean_absolute_error, mean_squared_error  #to check the error in our model
+
+df=pd.read_csv('USD_PKR_Exchange_Rates.csv')
+# print(df)
+
+date_range= [x for x in range(635)]
+# print(date_range)
+
+df['Date_New']= date_range
+# print(df)
+
+X = np.array(df['Date_New']).reshape(-1,1)
+# print(X)
+y = np.array(df['Price']).reshape(-1,1)
+# print(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.2, random_state=42) # 0.3 means 20% of data will be used for testing and 80% for training.
+
+regr= LinearRegression()
+
+regr.fit(X_train, y_train)
+print(regr.coef_) # it is m in y=mx+c
+print(regr.intercept_) # it is c in y= mx+c
+
+y_pred=regr.predict(X_test) #will give predicted values and prediction is done on test data not on training data
+
+d = np.round(X_test.squeeze()) #.squeeze() will bring down one dimension i.e. it will bring 2d to 1d array
+actual = np.round(y_test.squeeze())
+pred = np.round(y_pred.squeeze())
+df_pred=pd.DataFrame({'Date': d, 
+                      'Actual_Value':actual, 
+                      'Predicted_Value':pred})
+print(df_pred)
+
+mae= mean_absolute_error(y_test, y_pred) # closer to 0 is good because it will have less error
+mse= mean_squared_error(y_test, y_pred)
+rmse= np.sqrt(mse)
+
+print(f'Mean Absolute Error:{mae:.2f}')
+print(f'Mean Squared Error: {mse:.2f}')
+print(f'Root Mean Squared Error: {rmse:.2f}')
+
+plt.scatter(X_test,y_test, color= 'blue')
+plt.plot(X_test,y_pred, color='red')
+plt.show()
+
+def calc(slope, date, intercept ):
+    return slope * date + intercept
+
+st=float(input('Enter the Date as a numeric value: '))
+prediction= calc(regr.coef_, st, regr.intercept_)
+print('The predicted USD-PKR exchange rate will be: ', 'Rs.', np.round(float(prediction),2))
+
 
