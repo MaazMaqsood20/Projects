@@ -1,0 +1,147 @@
+"""
+Download the 'Life Expectancy Data.csv' to explore the variables that have a strong correlation with life expectancy. Perform Linear 
+Regression analysis with PYTHON SCIPY AND SKLEARN packages.
+"""
+
+import pandas as pd
+from scipy import stats
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set display options to show all rows and columns
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+df=pd.read_csv('Life Expectancy Data.csv')
+# print(df)
+
+# print(df.columns)
+# print(df.info())
+
+df.drop(['percentage expenditure',' BMI ','Total expenditure', 'Diphtheria ',
+          ' thinness  1-19 years', ' thinness 5-9 years','Population', 'Alcohol',
+          'Income composition of resources', 'Schooling', 'under-five deaths '],
+        axis=1, inplace=True)
+# print(df.info())
+# print(df.isnull().sum())
+df.dropna(subset=['Life expectancy ','Adult Mortality','GDP','Polio',
+                  'Hepatitis B'], inplace = True)
+# print(df.info())
+
+corr=round(df.corr(),2)
+# print(corr)
+gph=sns.heatmap(corr,annot=True)
+gph.set_xticklabels(gph.get_xticklabels(), rotation=20)
+plt.show()
+
+X = df['Adult Mortality']
+y = df['Life expectancy ']
+
+# slope, intercept, r, p, se=stats.linregress(x,y)
+slope, intercept, r, p, se = stats.linregress( X , y)
+
+print(slope)
+print(intercept)
+print(r) #r is correlation
+print(p) #p is probability
+print(se) #se is standard error
+
+# #y=mx+c or  y=ax +b  equation explained --> y= df['fx'] = (m or a is slope)*(x is X) + (c or b is y-intercept)
+df['fx'] = (slope * X + intercept)
+# print(df)
+
+# Find and store error in dataframe #variance
+df['Error'] = df['fx'] - df['Life expectancy ']
+# print(df)
+# print(df.loc(df['Date_New'] == 650))
+
+df.plot.scatter(x= 'Adult Mortality', y='Life expectancy ')
+plt.plot(df['Adult Mortality'], df['fx'], color= 'red')
+plt.xlabel('Adult Mortality')
+plt.ylabel('Age')
+plt.title('Linear Regression Model for Predicting Life Expectancy', fontweight='bold')
+plt.show()
+
+def f(x):
+    return slope*x + intercept
+
+statement=float(input('Enter the adult mortality: '))
+prediction= f(statement)
+life_exp_pred = round(max(0,prediction),0)
+
+print('The predicted Life Expectancy will be: ', life_exp_pred)
+
+#___________________________________________________________________________________________________#
+
+#Perform the linear regression via sklearn
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+#to use sklearn convert the data into 2d array
+
+from sklearn.model_selection import train_test_split
+#splits the data into 2 things train and test. the dataset will be segregated by sklearn where a portion of the data will be used for training and the other will be used for testing.
+
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+#to check the error in our model
+
+
+df=pd.read_csv('Life Expectancy Data.csv')
+# print(df)
+
+# print(df.columns)
+# print(df.info())
+
+df.drop(['percentage expenditure',' BMI ','Total expenditure', 'Diphtheria ',
+          ' thinness  1-19 years', ' thinness 5-9 years','Population', 'Alcohol',
+          'Income composition of resources', 'Schooling', 'under-five deaths '],
+        axis=1, inplace=True)
+# print(df.info())
+# print(df.isnull().sum())
+df.dropna(subset=['Life expectancy ','Adult Mortality','GDP','Polio',
+                  'Hepatitis B'], inplace = True)
+# # print(df.info())
+
+X = np.array(df['Adult Mortality']).reshape(-1,1)
+# print(X)
+y = np.array(df['Life expectancy ']).reshape(-1,1)
+# print(y)
+
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = 0.2, random_state=42) # 0.3 means 30% data will be used for testing and 70% for training. With random_state=42 everyone will get the same answer.
+
+regr= LinearRegression()
+
+regr.fit(X_train, y_train)
+print(regr.coef_) # it is m in y=mx+c
+print(regr.intercept_) # it is c in y= mx+c
+
+y_pred=regr.predict(X_test) #will give predicted values #prediction is done on test data not on training data
+
+AD = np.round(X_test.squeeze()) #.squeeze() will bring down one dimension i.e. it will bring 2d to 1d array
+actual = np.round(y_test.squeeze())
+pred = np.round(y_pred.squeeze())
+df_pred=pd.DataFrame({'Adult Mortality': AD, 
+                      'Actual_Value':actual, 
+                      'Predicted_Value':pred})
+print(df_pred)
+
+mae= mean_absolute_error(y_test, y_pred) # closer to 0 is good because it will have less error
+mse= mean_squared_error(y_test, y_pred)
+rmse= np.sqrt(mse)
+
+print(f'Mean Absolute Error:{mae:.2f}')
+print(f'Mean Squared Error: {mse:.2f}')
+print(f'Root Mean Squared Error: {rmse:.2f}')
+
+plt.scatter(X_test,y_test, color= 'blue')
+plt.plot(X_test,y_pred, color='red')
+plt.show()
+
+def calc(slope, cases, intercept ):
+    return slope * cases + intercept
+
+st=float(input('Enter the no. of adult mortality: '))
+prediction= calc(regr.coef_, st, regr.intercept_)
+
+print('The predicted Life Expectancy will be: ',np.round(float(prediction[0,0]),2))
