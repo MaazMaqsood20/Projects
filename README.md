@@ -1,6 +1,6 @@
 Welcome to my GitHub repository! Here, you will find an assortment of projects showcasing my expertise in Power BI, Python, Machine Learning, and more. This repository serves as a compilation of the work I have done to build a comprehensive and diverse portfolio.
 
-In my Power BI projects, I leverage the power of data visualization to transform complex datasets into intuitive and insightful dashboards. These visualizations not only convey information effectively but also provide actionable insights for better decision-making.
+In my Power BI projects, I leverage the power of data visualization to transform complex datasets into intuitive and insightful dashboards. These visualizations not only convey information effectively but also provide actionable insights for better decision-making. You can view my projects on NovyPro and interact with the report: https://www.novypro.com/profile_projects/muhammad-maazmaqsood
 
 With my Python projects, I demonstrate my proficiency in utilizing this versatile programming language for various data analysis and manipulation tasks. From data preprocessing and exploratory data analysis to implementing machine learning algorithms, my Python projects exhibit the breadth of my skills in data-driven analysis.
 
