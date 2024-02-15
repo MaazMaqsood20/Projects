@@ -1,1 +1,102 @@
+It's not that we humans only take debts to manage our necessities. A country may also take debt to manage its economy. For example, infrastructure spending 
+is one costly ingredient required for a country's citizens to lead comfortable lives. The World Bank is the organization that provides debt to countries.
 
+In this notebook, we are going to analyze international debt data collected by The World Bank. The dataset contains information about the amount of debt (in USD)
+owed by developing countries across several categories. We are going to find the answers to questions like:
+
+- What is the total amount of debt that is owed by the countries listed in the dataset?
+- Which country owns the maximum amount of debt and what does that amount look like?
+- What is the average amount of debt owed by countries across different debt indicators?
+
+
+--num_distinct_countries
+SELECT COUNT(DISTINCT country_name) AS total_distinct_countries
+FROM international_debt;
+
+Output:
+
+total_distinct_countries
+                    124
+
+--distinct_debt_indicators
+SELECT DISTINCT indicator_code AS distinct_debt_indicators
+FROM international_debt
+ORDER BY distinct_debt_indicators;
+
+Output:
+distinct_debt_indicators
+DT.AMT.BLAT.CD
+DT.AMT.DLXF.CD
+DT.AMT.DPNG.CD
+DT.AMT.MLAT.CD
+DT.AMT.OFFT.CD
+DT.AMT.PBND.CD
+DT.AMT.PCBK.CD
+DT.AMT.PROP.CD
+DT.AMT.PRVT.CD
+DT.DIS.BLAT.CD
+
+--total_debt
+SELECT ROUND(SUM(debt)/1000000,2) AS total_debt
+FROM international_debt;
+
+Output:
+
+total_debt
+3079734.49
+
+--highest_debt_country
+SELECT 
+		country_name,
+		SUM(debt) AS total_debt
+FROM   international_debt
+GROUP BY country_name
+ORDER BY total_debt DESC
+LIMIT 1;
+
+Output:
+
+country_name      total_debt
+China            285793494734.2
+
+--avg_debt_per_indicator
+SELECT 
+	indicator_code AS debt_indicator,
+	indicator_name,
+	AVG(debt) AS average_debt
+FROM international_debt
+GROUP BY indicator_code,indicator_name
+ORDER BY average_debt DESC
+LIMIT 10;
+
+Output:
+
+debt_indicator	indicator_name	                                                                          average_debt
+DT.AMT.DLXF.CD	"Principal repayments on external debt, long-term (AMT, current US$)"	                      5904868401
+DT.AMT.DPNG.CD	"Principal repayments on external debt, private nonguaranteed (PNG) (AMT, current US$)"	    5161194334
+DT.DIS.DLXF.CD	"Disbursements on external debt, long-term (DIS, current US$)"	                            2152041217
+DT.DIS.OFFT.CD	"PPG, official creditors (DIS, current US$)"	                                              1958983453
+DT.AMT.PRVT.CD	"PPG, private creditors (AMT, current US$)"	                                                1803694102
+DT.INT.DLXF.CD	"Interest payments on external debt, long-term (INT, current US$)"	                        1644024068
+DT.DIS.BLAT.CD	"PPG, bilateral (DIS, current US$)"	                                                        1223139290
+DT.INT.DPNG.CD	"Interest payments on external debt, private nonguaranteed (PNG) (INT, current US$)"	      1220410844
+DT.AMT.OFFT.CD	"PPG, official creditors (AMT, current US$)"	                                              1191187963
+DT.AMT.PBND.CD	"PPG, bonds (AMT, current US$)"	                                                            1082623948
+
+
+--highest_principal_repayment
+SELECT 
+    international_debt.country_name, 
+    international_debt.indicator_name
+FROM international_debt
+WHERE debt = (SELECT 
+                  MAX(debt)
+              FROM international_debt
+              WHERE indicator_code='DT.AMT.DLXF.CD');
+
+Output:
+
+country_name      indicator_name
+China             Principal repayments on external debt, long-term (AMT, current US$)
+
+	
