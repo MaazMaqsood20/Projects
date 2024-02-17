@@ -81,7 +81,7 @@ GROUP BY industry, num_unicorns, year
 ORDER BY year DESC, num_unicorns DESC
 
 Output:
-_______________________________     _____     _____________   ___________________________
+
 industry                      	    year	 num_unicorns	 average_valuation_billions
 _______________________________     _____     _____________   ___________________________
 Fintech                      	    2021	      138	                  2.75
