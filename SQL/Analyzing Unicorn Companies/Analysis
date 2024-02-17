@@ -82,7 +82,7 @@ ORDER BY year DESC, num_unicorns DESC
 
 Output:
 _______________________________     _____     _____________   ___________________________
-industry                      	    year	   num_unicorns	   average_valuation_billions
+industry                      	    year	 num_unicorns	 average_valuation_billions
 _______________________________     _____     _____________   ___________________________
 Fintech                      	    2021	      138	                  2.75
 Internet software & services	    2021	      119	                  2.15
